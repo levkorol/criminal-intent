@@ -3,6 +3,7 @@ package ru.harlion.criminalintent
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.widget.DatePicker
 import androidx.fragment.app.DialogFragment
 import java.util.*
 
@@ -10,12 +11,20 @@ private const val ARG_DATE = "date"
 
 class DatePickerFragment : DialogFragment() {
 
-    interfase Callbacks
-    {
+    interface Callbacks {
         fun onDateSelected(date: Date)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
+        val dateListener =
+            DatePickerDialog.OnDateSetListener { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+
+                val resultDate: Date = GregorianCalendar(year, month, dayOfMonth).time
+                targetFragment?.let {
+                    (it as Callbacks).onDateSelected(resultDate)
+                }
+            }
 
         val date = arguments?.getSerializable(ARG_DATE) as Date
 
@@ -29,7 +38,7 @@ class DatePickerFragment : DialogFragment() {
 
         return DatePickerDialog(
             requireContext(),
-            null,
+            dateListener,
             initialYear,
             initialMonth,
             initialDay
